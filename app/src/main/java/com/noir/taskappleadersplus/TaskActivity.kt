@@ -18,7 +18,11 @@ import java.util.*
 
 class TaskActivity : AppCompatActivity() {
 
-  lateinit var realm: Realm
+  // realmの準備
+  private val realm: Realm by lazy {
+    Realm.getDefaultInstance()
+  }
+
   private var task: Task? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,9 +30,6 @@ class TaskActivity : AppCompatActivity() {
     setContentView(R.layout.activity_task)
 
     Log.d("onCreate:", "OK")
-
-    //realmを開く
-    realm = Realm.getDefaultInstance()
 
     task = realm
       .where(Task::class.java)
@@ -65,7 +66,7 @@ class TaskActivity : AppCompatActivity() {
       contentTextView.text = it.content
       val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.JAPANESE)
       val date = it.date
-      timestamp.text = simpleDateFormat.format(date!!)
+      timestamp.text = simpleDateFormat.format(date)
       checkBox.isChecked = it.isChecked
     }
   }

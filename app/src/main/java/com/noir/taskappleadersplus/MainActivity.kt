@@ -7,13 +7,14 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import io.realm.Realm
 import io.realm.RealmChangeListener
 import io.realm.RealmResults
 import io.realm.Sort
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
-
 
 class MainActivity : AppCompatActivity(), TaskAdapter.OnCheckClickListener {
 
@@ -114,7 +115,17 @@ class MainActivity : AppCompatActivity(), TaskAdapter.OnCheckClickListener {
 
     val adapter = TaskAdapter(tasks)
     adapter.setOnCheckClickListener(this)
+    // LinearLayoutManagerオブジェクトを生成
+    val managaer = LinearLayoutManager(applicationContext)
+    // RecyclerViewにレイアウトマネージャーとしてLinearLayoutManagerを設定
+    recyclerView.layoutManager = managaer
+    // RecyclerViewにアダプタオブジェクトを設定
     recyclerView.adapter = adapter
+
+    // 区切り専用のオブジェクトを生成
+    val decorator = DividerItemDecoration(applicationContext, managaer.orientation)
+    // RecyclerViewに区切り線オブジェクトを設定
+    recyclerView.addItemDecoration(decorator)
 
     adapter.notifyDataSetChanged()
   }

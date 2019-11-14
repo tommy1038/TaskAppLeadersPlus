@@ -98,7 +98,7 @@ class TaskAdapter(private var mTasks: List<Task>) : RecyclerView.Adapter<TaskAda
     return mTasks.size
   }
 
-  inner class RecyclerViewHolder(var view: View) : RecyclerView.ViewHolder(view) {
+  inner class RecyclerViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     val linearLayout: LinearLayout = view.linearLayout
     var titleTextView: TextView = view.titleText
     val timestampTextView: TextView = view.timestamp

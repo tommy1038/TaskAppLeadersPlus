@@ -13,5 +13,5 @@ open class Task(
   open var updateDate: String = "",
   open var content: String = "",
   open var isChecked: Boolean = false,
-  open var date: Date? = null
+  open var date: Date = Date()
 ) : RealmObject(), Serializable
