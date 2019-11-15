@@ -9,6 +9,5 @@ class TaskApplication : Application() {
     super.onCreate()
 
     Realm.init(applicationContext)
-
   }
 }

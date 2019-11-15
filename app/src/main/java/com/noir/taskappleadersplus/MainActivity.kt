@@ -22,13 +22,13 @@ class MainActivity : AppCompatActivity(), TaskAdapter.OnCheckClickListener {
     const val EXTRA_TASK: String = "jp.tomiyama.noir.taskappleaders.TASK"
   }
 
-  private val mRealmListener: RealmChangeListener<Realm> = RealmChangeListener {
-    setTaskList()
-  }
-
   // realmの準備
   private val realm: Realm by lazy {
     Realm.getDefaultInstance()
+  }
+
+  private val mRealmListener: RealmChangeListener<Realm> = RealmChangeListener {
+    setTaskList()
   }
 
   override fun onCheckClick(updateDate: String) {
@@ -39,15 +39,16 @@ class MainActivity : AppCompatActivity(), TaskAdapter.OnCheckClickListener {
 
     realm.executeTransaction {
       realmTask?.let {
-        it.isChecked = !it.isChecked
+        it.isChecked = !(it.isChecked)
       }
     }
-
-    setTaskList()
   }
 
-  // タスク分類用変数
+  // タスク分類用変数(0: 全て選択，1: 達成済，2: 未達成)
   private var mode: Int = 0
+
+  private lateinit var tasks: List<Task>
+  lateinit var adapter: TaskAdapter
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -58,49 +59,66 @@ class MainActivity : AppCompatActivity(), TaskAdapter.OnCheckClickListener {
       val intent = Intent(applicationContext, CreateActivity::class.java)
       startActivity(intent)
     }
-    setTaskList()
+
+    tasks = getTasks()
+    // 表示の切替え
+    switchView(tasks)
+
+    // アダプターの用意
+    adapter = TaskAdapter(tasks)
+    // アダプターにクリックリスナーを設定
+    // チェックボックス周りの処理
+    adapter.setOnCheckClickListener(this)
+    // LinearLayoutManagerオブジェクトを生成
+    val manager = LinearLayoutManager(applicationContext)
+    // RecyclerViewにレイアウトマネージャーとしてLinearLayoutManagerを設定
+    recyclerView.layoutManager = manager
+    // RecyclerViewにアダプタオブジェクトを設定
+    recyclerView.adapter = adapter
+
+    // 区切り専用のオブジェクトを生成
+    val decorator = DividerItemDecoration(applicationContext, manager.orientation)
+    // RecyclerViewに区切り線オブジェクトを設定
+    recyclerView.addItemDecoration(decorator)
   }
 
-  override fun onResume() {
-    super.onResume()
-    setTaskList()
-  }
-
-  private fun setTaskList() {
-
-    lateinit var results: RealmResults<Task>
-
+  private fun getTasks(): List<Task> {
     when (mode) {
+      0 -> statusText.text = "All TO-DOs"
+      1 -> statusText.text = "Completed TO-DOs"
+      2 -> statusText.text = "Active TO-DOs"
+    }
+
+    val results: RealmResults<Task> = when (mode) {
       // 全タスク
       0 -> {
-        statusText.text = "All TO-DOs"
-        results = realm.where(Task::class.java)
+        realm.where(Task::class.java)
           .findAll()
           .sort("date", Sort.ASCENDING)
       }
       // 達成済みタスク
       1 -> {
-        statusText.text = "Completed TO-DOs"
-        results = realm.where(Task::class.java)
+        realm.where(Task::class.java)
           .equalTo("isChecked", true)
           .findAll()
           .sort("date", Sort.ASCENDING)
       }
       // 未達成タスク
       2 -> {
-        statusText.text = "Active TO-DOs"
-        results = realm.where(Task::class.java)
+        realm.where(Task::class.java)
           .equalTo("isChecked", false)
           .findAll()
           .sort("date", Sort.ASCENDING)
       }
-      else -> {
-      }
+      else -> return mutableListOf()
     }
 
-    // realmから読み取る
-    val tasks = realm.copyFromRealm(results)
+    // realmからtaskListを読み取る
+    tasks = realm.copyFromRealm(results)
+    return tasks
+  }
 
+  private fun switchView(tasks: List<Task>) {
     // 表示の切り替え
     if (tasks.isEmpty()) {
       imageView.visibility = View.VISIBLE
@@ -112,22 +130,47 @@ class MainActivity : AppCompatActivity(), TaskAdapter.OnCheckClickListener {
       explainText.visibility = View.INVISIBLE
       statusText.visibility = View.VISIBLE
     }
+  }
 
-    val adapter = TaskAdapter(tasks)
-    adapter.setOnCheckClickListener(this)
-    // LinearLayoutManagerオブジェクトを生成
-    val managaer = LinearLayoutManager(applicationContext)
-    // RecyclerViewにレイアウトマネージャーとしてLinearLayoutManagerを設定
-    recyclerView.layoutManager = managaer
-    // RecyclerViewにアダプタオブジェクトを設定
-    recyclerView.adapter = adapter
+  override fun onResume() {
+    super.onResume()
+    setTaskList()
+  }
 
-    // 区切り専用のオブジェクトを生成
-    val decorator = DividerItemDecoration(applicationContext, managaer.orientation)
-    // RecyclerViewに区切り線オブジェクトを設定
-    recyclerView.addItemDecoration(decorator)
 
-    adapter.notifyDataSetChanged()
+  private fun setTaskList() {
+    val results: RealmResults<Task> = when (mode) {
+      // 全タスク
+      0 -> {
+        realm.where(Task::class.java)
+          .findAll()
+          .sort("date", Sort.ASCENDING)
+      }
+      // 達成済みタスク
+      1 -> {
+        realm.where(Task::class.java)
+          .equalTo("isChecked", true)
+          .findAll()
+          .sort("date", Sort.ASCENDING)
+      }
+      // 未達成タスク
+      2 -> {
+        realm.where(Task::class.java)
+          .equalTo("isChecked", false)
+          .findAll()
+          .sort("date", Sort.ASCENDING)
+      }
+      else -> return
+    }
+
+    // realmからtaskListを読み取る
+    tasks = realm.copyFromRealm(results)
+
+    // 表示の切替え
+    switchView(tasks)
+
+    // データ更新時の処理
+    adapter.update(tasks)
   }
 
   override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -141,26 +184,27 @@ class MainActivity : AppCompatActivity(), TaskAdapter.OnCheckClickListener {
       R.id.active -> {
         // 未達成タスクの表示
         Toast.makeText(applicationContext, "active", Toast.LENGTH_SHORT).show()
-        // TextViewの変更
+        statusText.text = "Active TO-DOs"
         mode = 2
         setTaskList()
       }
       R.id.completed -> {
         // 達成済タスクの表示
         Toast.makeText(applicationContext, "completed", Toast.LENGTH_SHORT).show()
+        statusText.text = "Completed TO-DOs"
         mode = 1
         setTaskList()
       }
       R.id.all -> {
         // 全てのタスクの表示
         Toast.makeText(applicationContext, "all", Toast.LENGTH_SHORT).show()
+        statusText.text = "All TO-DOs"
         mode = 0
         setTaskList()
       }
       else -> {
       }
     }
-
     return super.onOptionsItemSelected(item)
   }
 

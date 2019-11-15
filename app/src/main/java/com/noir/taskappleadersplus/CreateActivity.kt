@@ -57,13 +57,6 @@ class CreateActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_create)
 
-    createFab.setOnClickListener {
-      createTask()
-
-      // 画面を終了する
-      finish()
-    }
-
     // 日付処理の追加
     dateButton.setOnClickListener(mOnDateClickListener)
     timeButton.setOnClickListener(mOnTimeClickListener)
@@ -75,6 +68,13 @@ class CreateActivity : AppCompatActivity() {
     mDay = calendar.get(Calendar.DAY_OF_MONTH)
     mHour = calendar.get(Calendar.HOUR_OF_DAY)
     mMinute = calendar.get(Calendar.MINUTE)
+
+    createFab.setOnClickListener {
+      createTask()
+
+      // 画面を終了する
+      finish()
+    }
   }
 
   // EditText に入力されたデータを元にTaskを作る

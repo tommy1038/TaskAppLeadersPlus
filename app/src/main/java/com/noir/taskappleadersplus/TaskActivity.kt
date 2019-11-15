@@ -88,12 +88,8 @@ class TaskActivity : AppCompatActivity() {
 
           // OKボタン
           builder.setPositiveButton("OK") { _, _ ->
-            // 削除する
-            realm.executeTransaction {
-              task.deleteFromRealm()
-              finish()
-            }
 
+            // 通知の取り消し
             val resultIntent = Intent(applicationContext, TaskAlarmReceiver::class.java)
             val resultPendingIntent = PendingIntent.getBroadcast(
               this@TaskActivity,
@@ -104,6 +100,12 @@ class TaskActivity : AppCompatActivity() {
 
             val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
             alarmManager.cancel(resultPendingIntent)
+
+            // 削除する
+            realm.executeTransaction {
+              task.deleteFromRealm()
+              finish()
+            }
           }
 
           // NGボタン
@@ -130,6 +132,7 @@ class TaskActivity : AppCompatActivity() {
   override fun onDestroy() {
     super.onDestroy()
     Log.d("onDestroy:", "OK")
+
     // realmを閉じる
     realm.close()
   }

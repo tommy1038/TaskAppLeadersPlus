@@ -71,34 +71,36 @@ class DetailActivity : AppCompatActivity() {
 
     updateFab.setOnClickListener {
       update()
+
       // 画面を終了する
       finish()
     }
   }
 
   private fun update() {
-    val task = realm.where(Task::class.java).equalTo(
-      "updateDate",
-      intent.getStringExtra("updateDate")
-    ).findFirst()
+    val task = realm
+      .where(Task::class.java)
+      .equalTo(
+        "updateDate", intent.getStringExtra("updateDate")
+      ).findFirst()
 
-    task?.let { task ->
+    task?.let { mTask ->
       val calendar = GregorianCalendar(mYear, mMonth, mDay, mHour, mMinute)
 
       // 更新する
       realm.executeTransaction {
-        task.title = titleEditText.text.toString()
-        task.content = contentEditText.text.toString()
+        mTask.title = titleEditText.text.toString()
+        mTask.content = contentEditText.text.toString()
 
         val date = calendar.time
-        task.date = date
+        mTask.date = date
       }
 
       val resultIntent = Intent(applicationContext, TaskAlarmReceiver::class.java)
-      resultIntent.putExtra(MainActivity.EXTRA_TASK, task.id)
+      resultIntent.putExtra(MainActivity.EXTRA_TASK, mTask.id)
       val resultPendingIntent = PendingIntent.getBroadcast(
         this,
-        task.id,
+        mTask.id,
         resultIntent,
         PendingIntent.FLAG_UPDATE_CURRENT
       )
@@ -133,12 +135,12 @@ class DetailActivity : AppCompatActivity() {
       intent.getStringExtra("updateDate")
     ).findFirst()
 
-    task?.let { task ->
-      titleEditText.setText(task.title)
-      contentEditText.setText(task.content)
+    task?.let { mTask ->
+      titleEditText.setText(mTask.title)
+      contentEditText.setText(mTask.content)
 
       val calendar = Calendar.getInstance()
-      calendar.time = task.date
+      calendar.time = mTask.date
       mYear = calendar.get(Calendar.YEAR)
       mMonth = calendar.get(Calendar.MONTH)
       mDay = calendar.get(Calendar.DAY_OF_MONTH)

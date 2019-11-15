@@ -31,15 +31,12 @@ class TaskAdapter(private var mTasks: List<Task>) : RecyclerView.Adapter<TaskAda
     val layoutInflater = LayoutInflater.from(parent.context)
     // layout_task.xmlをインフレートし，1行分の画面部品とする
     val view = layoutInflater.inflate(R.layout.layout_task, parent, false)
-    // インフレートされた1行分の画面部品にリスナを設定
-//    view.setOnClickListener(ItemClickListener())
-    // ビューホルダーオブジェクトを生成
-    val holder = RecyclerViewHolder(view)
     // 生成したビューホルダーをリターン
-    return holder
+    return RecyclerViewHolder(view)
   }
 
   override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int) {
+
     // リストデータから該当1行分のデータを取得
     val task = mTasks[position]
     holder.titleTextView.text = task.title
@@ -85,14 +82,15 @@ class TaskAdapter(private var mTasks: List<Task>) : RecyclerView.Adapter<TaskAda
         onCheckClickListener?.onCheckClick(task.updateDate)
       }
     }
-
   }
 
-//  private inner class ItemClickListener : View.OnClickListener {
-//    override fun onClick(view: View) {
-//      // クリック処理の移植
-//    }
-//  }
+  /**
+   * データをセットしてアップデートする
+   */
+  fun update(tasks: List<Task>) {
+    this.mTasks = tasks
+    notifyDataSetChanged()
+  }
 
   override fun getItemCount(): Int {
     return mTasks.size
