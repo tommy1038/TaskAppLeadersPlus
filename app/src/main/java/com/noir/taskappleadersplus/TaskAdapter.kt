@@ -10,7 +10,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.layout_task.view.*
+import kotlinx.android .synthetic.main.layout_task.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -27,12 +27,14 @@ class TaskAdapter(private var mTasks: List<Task>) : RecyclerView.Adapter<TaskAda
   }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerViewHolder {
-    // レイアウトインフレータを取得
-    val layoutInflater = LayoutInflater.from(parent.context)
-    // layout_task.xmlをインフレートし，1行分の画面部品とする
-    val view = layoutInflater.inflate(R.layout.layout_task, parent, false)
-    // 生成したビューホルダーをリターン
-    return RecyclerViewHolder(view)
+//    // レイアウトインフレータを取得
+//    val layoutInflater = LayoutInflater.from(parent.context)
+//    // layout_task.xmlをインフレートし，1行分の画面部品とする
+//    val view = layoutInflater.inflate(R.layout.layout_task, parent, false)
+//    // 生成したビューホルダーをリターン
+//    return RecyclerViewHolder(view)
+    return RecyclerViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.layout_task, parent, false))
+
   }
 
   override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int) {
