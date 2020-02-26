@@ -1,7 +1,5 @@
 package com.noir.taskappleadersplus
 
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -13,8 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_task.*
-import java.text.SimpleDateFormat
-import java.util.*
 
 class TaskActivity : AppCompatActivity() {
 
@@ -64,9 +60,6 @@ class TaskActivity : AppCompatActivity() {
     task?.let {
       titleTextView.text = it.title
       contentTextView.text = it.content
-      val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.JAPANESE)
-      val date = it.date
-      timestamp.text = simpleDateFormat.format(date)
       checkBox.isChecked = it.isChecked
     }
   }
@@ -88,19 +81,6 @@ class TaskActivity : AppCompatActivity() {
 
           // OKボタン
           builder.setPositiveButton("OK") { _, _ ->
-
-            // 通知の取り消し
-            val resultIntent = Intent(applicationContext, TaskAlarmReceiver::class.java)
-            val resultPendingIntent = PendingIntent.getBroadcast(
-              this@TaskActivity,
-              task.id,
-              resultIntent,
-              PendingIntent.FLAG_UPDATE_CURRENT
-            )
-
-            val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-            alarmManager.cancel(resultPendingIntent)
-
             // 削除する
             realm.executeTransaction {
               task.deleteFromRealm()

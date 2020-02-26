@@ -3,7 +3,6 @@ package com.noir.taskappleadersplus
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import java.io.Serializable
-import java.util.*
 
 // id をプライマリーキーとして設定
 open class Task(
@@ -12,6 +11,5 @@ open class Task(
   open var title: String = "",
   open var updateDate: String = "",
   open var content: String = "",
-  open var isChecked: Boolean = false,
-  open var date: Date = Date()
+  open var isChecked: Boolean = false
 ) : RealmObject(), Serializable

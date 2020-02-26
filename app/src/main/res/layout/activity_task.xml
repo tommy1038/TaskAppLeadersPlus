@@ -39,7 +39,7 @@
       android:layout_width="0dp"
       android:layout_height="0dp"
       android:layout_below="@id/titleTextView"
-      android:layout_marginEnd="8dp"
+      android:layout_marginEnd="32dp"
       android:layout_marginBottom="8dp"
       android:layout_toRightOf="@id/checkBox"
       app:layout_constraintBottom_toBottomOf="parent"
@@ -47,21 +47,6 @@
       app:layout_constraintStart_toEndOf="@+id/checkBox"
       app:layout_constraintTop_toBottomOf="@+id/titleTextView"
       tools:text="Medium Text" />
-
-    <TextView
-      android:id="@+id/timestamp"
-      android:layout_width="0dp"
-      android:layout_height="0dp"
-      android:layout_marginStart="8dp"
-      android:layout_marginTop="16dp"
-      android:layout_marginEnd="8dp"
-      android:gravity="fill_vertical"
-      android:textSize="14sp"
-      app:layout_constraintBottom_toTopOf="@+id/contentTextView"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toEndOf="@+id/titleTextView"
-      app:layout_constraintTop_toTopOf="parent"
-      tools:text="timestamp" />
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 

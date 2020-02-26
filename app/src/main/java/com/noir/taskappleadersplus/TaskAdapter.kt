@@ -10,9 +10,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android .synthetic.main.layout_task.view.*
-import java.text.SimpleDateFormat
-import java.util.*
+import kotlinx.android.synthetic.main.layout_task.view.*
 
 class TaskAdapter(private var mTasks: List<Task>) : RecyclerView.Adapter<TaskAdapter.RecyclerViewHolder>() {
 
@@ -43,10 +41,6 @@ class TaskAdapter(private var mTasks: List<Task>) : RecyclerView.Adapter<TaskAda
     val task = mTasks[position]
     holder.titleTextView.text = task.title
     holder.checkBox.isChecked = task.isChecked
-
-    val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.JAPANESE)
-    val date = task.date
-    holder.timestampTextView.text = simpleDateFormat.format(date)
 
     // チェック選択時の色変更
     if (task.isChecked) {
@@ -101,7 +95,6 @@ class TaskAdapter(private var mTasks: List<Task>) : RecyclerView.Adapter<TaskAda
   inner class RecyclerViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     val linearLayout: LinearLayout = view.linearLayout
     var titleTextView: TextView = view.titleText
-    val timestampTextView: TextView = view.timestamp
     var checkBox: CheckBox = view.checkBox
   }
 }

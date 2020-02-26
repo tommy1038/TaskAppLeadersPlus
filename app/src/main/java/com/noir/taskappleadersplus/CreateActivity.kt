@@ -1,12 +1,6 @@
 package com.noir.taskappleadersplus
 
-import android.app.AlarmManager
-import android.app.DatePickerDialog
-import android.app.PendingIntent
-import android.app.TimePickerDialog
-import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_create.*
@@ -19,55 +13,9 @@ class CreateActivity : AppCompatActivity() {
     Realm.getDefaultInstance()
   }
 
-  private var mYear: Int = 0
-  private var mMonth: Int = 0
-  private var mDay: Int = 0
-  private var mHour: Int = 0
-  private var mMinute: Int = 0
-
-  private val mOnDateClickListener = View.OnClickListener {
-    val datePickerDialog = DatePickerDialog(
-      this@CreateActivity,
-      DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
-        mYear = year
-        mMonth = monthOfYear
-        mDay = dayOfMonth
-        val dateString = mYear.toString() + "/" + String.format("%02d", mMonth + 1) + "/" + String.format("%02d", mDay)
-        dateButton.setText(dateString)
-      }, mYear, mMonth, mDay
-    )
-    datePickerDialog.show()
-  }
-
-  private val mOnTimeClickListener = View.OnClickListener {
-    val timePickerDialog = TimePickerDialog(
-      this@CreateActivity,
-      TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-        mHour = hourOfDay
-        mMinute = minute
-        val timeString = String.format("%02d", mHour) + ":" + String.format("%02d", mMinute)
-        timeButton.text = timeString
-      }, mHour, mMinute, false
-    )
-    timePickerDialog.show()
-  }
-
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_create)
-
-    // 日付処理の追加
-    dateButton.setOnClickListener(mOnDateClickListener)
-    timeButton.setOnClickListener(mOnTimeClickListener)
-
-    // 新規作成の場合
-    val calendar = Calendar.getInstance()
-    mYear = calendar.get(Calendar.YEAR)
-    mMonth = calendar.get(Calendar.MONTH)
-    mDay = calendar.get(Calendar.DAY_OF_MONTH)
-    mHour = calendar.get(Calendar.HOUR_OF_DAY)
-    mMinute = calendar.get(Calendar.MINUTE)
 
     createFab.setOnClickListener {
       createTask()
@@ -95,9 +43,6 @@ class CreateActivity : AppCompatActivity() {
   // データをRealmに保存する
   private fun save(title: String, updateDate: String, content: String) {
 
-    // 期限などの日付の情報の取得
-    val calendar = GregorianCalendar(mYear, mMonth, mDay, mHour, mMinute)
-
     val taskRealmResults = realm.where(Task::class.java).findAll()
 
     // 識別子の設定
@@ -115,24 +60,9 @@ class CreateActivity : AppCompatActivity() {
       task.content = content
       task.isChecked = false
 
-      // 通知時間の処理の追加
-      val date = calendar.time
-      task.date = date
-
 //      task.id = identifier
     }
 
-    val resultIntent = Intent(applicationContext, TaskAlarmReceiver::class.java)
-    resultIntent.putExtra(MainActivity.EXTRA_TASK, identifier)
-    val resultPendingIntent = PendingIntent.getBroadcast(
-      this,
-      identifier,
-      resultIntent,
-      PendingIntent.FLAG_UPDATE_CURRENT
-    )
-
-    val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-    alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, resultPendingIntent)
   }
 
 

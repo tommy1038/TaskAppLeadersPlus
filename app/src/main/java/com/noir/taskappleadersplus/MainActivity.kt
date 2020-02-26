@@ -1,10 +1,7 @@
 package com.noir.taskappleadersplus
 
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -18,7 +15,6 @@ import io.realm.RealmResults
 import io.realm.Sort
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
-import java.util.*
 
 class MainActivity : AppCompatActivity(), TaskAdapter.OnCheckClickListener {
 
@@ -85,60 +81,6 @@ class MainActivity : AppCompatActivity(), TaskAdapter.OnCheckClickListener {
     // RecyclerViewに区切り線オブジェクトを設定
     recyclerView.addItemDecoration(decorator)
 
-    demoAlarm()
-  }
-
-  private fun demoAlarm() {
-
-    // 現在の時刻の取得
-    var calendar = Calendar.getInstance()
-    var mYear = calendar.get(Calendar.YEAR)
-    var mMonth = calendar.get(Calendar.MONTH)
-    var mDay = calendar.get(Calendar.DAY_OF_MONTH)
-    var mHour = calendar.get(Calendar.HOUR_OF_DAY)
-    var mMinute = calendar.get(Calendar.MINUTE)
-
-    Log.d("mYear", mYear.toString())
-    Log.d("mMonth", mMonth.toString())
-    Log.d("mDay", mDay.toString())
-    Log.d("mHour", mHour.toString())
-    Log.d("mMinute", mMinute.toString())
-
-    var array = arrayOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
-    var index = 0
-
-    // 今日の時刻が8時以降だったら，翌日に通知をする
-    if (mHour > 8) {
-//      calendar.set(Calendar.DAY_OF_MONTH, mDay + 1)
-//      calendar.set(Calendar.HOUR_OF_DAY, 8)
-//      calendar.set(Calendar.MINUTE, 0)
-
-      calendar.set(Calendar.MINUTE, mMinute + 2)
-
-//      mDay = calendar.get(Calendar.DAY_OF_MONTH)
-//      mHour = calendar.get(Calendar.HOUR_OF_DAY)
-      mMinute = calendar.get(Calendar.MINUTE)
-
-      Log.d("mDay", mDay.toString())
-      Log.d("mHour", mHour.toString())
-      Log.d("mMinute", mMinute.toString())
-
-      val resultIntent = Intent(applicationContext, TaskAlarmReceiver::class.java)
-      var identifier = array[index]
-      resultIntent.putExtra(EXTRA_TASK, identifier)
-      val resultPendingIntent = PendingIntent.getBroadcast(
-        this,
-        identifier,
-        resultIntent,
-        PendingIntent.FLAG_UPDATE_CURRENT
-      )
-
-      val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-      alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, resultPendingIntent)
-
-    }
-
-
   }
 
   private fun getTasks(): List<Task> {
@@ -153,21 +95,21 @@ class MainActivity : AppCompatActivity(), TaskAdapter.OnCheckClickListener {
       0 -> {
         realm.where(Task::class.java)
           .findAll()
-          .sort("date", Sort.ASCENDING)
+          .sort("updateDate", Sort.ASCENDING)
       }
       // 達成済みタスク
       1 -> {
         realm.where(Task::class.java)
           .equalTo("isChecked", true)
           .findAll()
-          .sort("date", Sort.ASCENDING)
+          .sort("updateDate", Sort.ASCENDING)
       }
       // 未達成タスク
       2 -> {
         realm.where(Task::class.java)
           .equalTo("isChecked", false)
           .findAll()
-          .sort("date", Sort.ASCENDING)
+          .sort("updateDate", Sort.ASCENDING)
       }
       else -> return mutableListOf()
     }
@@ -203,21 +145,21 @@ class MainActivity : AppCompatActivity(), TaskAdapter.OnCheckClickListener {
       0 -> {
         realm.where(Task::class.java)
           .findAll()
-          .sort("date", Sort.ASCENDING)
+          .sort("updateDate", Sort.ASCENDING)
       }
       // 達成済みタスク
       1 -> {
         realm.where(Task::class.java)
           .equalTo("isChecked", true)
           .findAll()
-          .sort("date", Sort.ASCENDING)
+          .sort("updateDate", Sort.ASCENDING)
       }
       // 未達成タスク
       2 -> {
         realm.where(Task::class.java)
           .equalTo("isChecked", false)
           .findAll()
-          .sort("date", Sort.ASCENDING)
+          .sort("updateDate", Sort.ASCENDING)
       }
       else -> return
     }
